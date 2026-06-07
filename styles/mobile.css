@@ -1,0 +1,590 @@
+/* 
+ * mobile.css - 移动端响应式样式
+ * 仅在屏幕宽度 <= 768px 时生效
+ */
+
+/* ================= 移动端操作栏（编辑模式）================= */
+#mobile-controls {
+    display: none;
+    /* 默认隐藏，由 JS 控制显示 */
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    gap: 25px;
+    z-index: 2000;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-ctrl-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.95);
+    font-size: 28px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.mobile-ctrl-btn:active {
+    transform: scale(0.9);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 编辑模式下隐藏的元素 */
+.hidden-in-edit-mode {
+    display: none !important;
+}
+
+
+@media screen and (max-width: 768px) {
+
+    /* ================= 商店面板 - 重新设计 ================= */
+    #shop-panel-container {
+        width: 95% !important;
+        /* 不占满全宽 */
+        max-width: 550px !important;
+        height: 240px !important;
+
+        border: 1px solid rgba(255, 255, 255, 0.55) !important;
+        background: rgba(255, 255, 255, 0.52) !important;
+        border-radius: 26px !important;
+        box-shadow: 0 20px 60px rgba(18, 32, 64, 0.18) !important;
+        backdrop-filter: blur(18px) saturate(1.25) !important;
+        padding: 0 !important;
+
+        /* 改为居中显示，不是底部 */
+        bottom: -10px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+
+    /* [修复] 确保关闭状态下完全不可见 */
+    #shop-panel-container.hidden-bottom {
+        transform: translate(-50%, 150%) !important;
+        /* 增加偏移量，确保完全移出屏幕 */
+        pointer-events: none !important;
+        /* 禁用点击事件 */
+    }
+
+    /* 隐藏商店标题牌（设计图中没有） */
+    #shop-title-img {
+        display: none !important;
+    }
+
+    /* 商店关闭按钮 - 移到右上角内部 */
+    #shop-close-btn {
+        width: 40px !important;
+        height: 40px !important;
+        top: -5px !important;
+        /* 改为在面板内部 */
+        right: -5px !important;
+    }
+
+    /* 商店标签栏 - 移到顶部横向排列 */
+    #shop-tabs {
+        position: absolute !important;
+        top: 0px !important;
+        /* 顶部 */
+        left: 45% !important;
+        /* 水平居中 */
+        transform: translateX(-50%) !important;
+        right: auto !important;
+        /* 取消原来的right定位 */
+        display: flex !important;
+        flex-direction: row !important;
+        /* 横向排列 */
+        gap: 4px !important;
+        /* 标签之间的间距 */
+    }
+
+    .shop-tab {
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    /* 商品滚动区 - 调整内边距，为顶部标签栏留空间 */
+    #items-scroll {
+        padding: 60px 10px 30px 10px !important;
+        /* 顶部留出60px给标签栏 */
+        gap: 12px !important;
+
+        /* [修复] 优化触摸滚动，防止滚动时父容器border-image闪烁 */
+        -webkit-overflow-scrolling: touch;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+    }
+
+    /* 商品卡片 - 调整大小 */
+    .item-card {
+        width: 90px !important;
+        height: 130px !important;
+    }
+
+    /* 移动端装饰预览状态 - 呼吸光效提示用户再次点击确认 */
+    .item-card.previewing {
+        outline: 3px solid #ffd700;
+        outline-offset: -2px;
+        border-radius: 10px;
+        animation: previewPulse 1.2s ease-in-out infinite;
+        position: relative;
+    }
+
+    .item-card.previewing::after {
+        content: '再次点击确认购买';
+        position: absolute;
+        top: -22px;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        font-size: 10px;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 2px 6px;
+        border-radius: 4px;
+        pointer-events: none;
+        z-index: 10;
+    }
+
+    .item-card.previewing .item-icon {
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6));
+    }
+
+    @keyframes previewPulse {
+
+        0%,
+        100% {
+            outline-color: rgba(255, 215, 0, 0.9);
+        }
+
+        50% {
+            outline-color: rgba(255, 215, 0, 0.3);
+        }
+    }
+
+    .shelf-bg {
+        top: 55px !important;
+        width: 75px !important;
+        height: 35px !important;
+    }
+
+    .item-icon {
+        width: 65px !important;
+        height: 65px !important;
+    }
+
+    .price-tag-new {
+        width: 60px !important;
+        height: 26px !important;
+        font-size: 12px !important;
+        bottom: 12px !important;
+    }
+
+    .price-heart-icon {
+        width: 12px !important;
+        height: 12px !important;
+    }
+
+    /* 自定义滚动条 - 调整 */
+    #custom-scrollbar {
+        bottom: 0px !important;
+    }
+
+    #custom-thumb {
+        width: 40px !important;
+        height: 32px !important;
+    }
+
+    /* ================= HUD 左上角 ================= */
+    #hud-top-left {
+        top: 10px !important;
+        left: 10px !important;
+        gap: 5px !important;
+    }
+
+    /* 时间组件 - 缩小 */
+    #time-widget {
+        width: 120px !important;
+        height: 120px !important;
+    }
+
+    #time-text-display {
+        font-size: 30px !important;
+    }
+
+    #time-ampm {
+        font-size: 14px !important;
+    }
+
+    #weather-icon-container {
+        width: 42px !important;
+        height: 42px !important;
+    }
+
+    #weather-toggle-btn {
+        width: 42px !important;
+        height: 42px !important;
+    }
+
+    /* 爱心组件 - 缩小 */
+    #heart-widget {
+        width: 132px !important;
+        height: 40px !important;
+    }
+
+    #heart-icon-img {
+        width: 24px !important;
+        height: 24px !important;
+        left: 8px !important;
+        top: 8px !important;
+    }
+
+    #heart-bg {
+        padding-left: 54px !important;
+    }
+
+    #heart-text-display {
+        font-size: 16px !important;
+    }
+
+    #heart-widget::before {
+        left: 12px !important;
+        width: 26px !important;
+        height: 26px !important;
+        font-size: 16px !important;
+    }
+
+    /* 状态球组件 - 缩小 */
+    #status-widget-group {
+        gap: 6px !important;
+    }
+
+    .status-circle {
+        width: 44px !important;
+        height: 44px !important;
+    }
+
+    #status-widget-group .status-circle::after {
+        font-size: 20px !important;
+    }
+
+    .liquid-texture {
+        height: 40px !important;
+    }
+
+    /* ================= 底部按钮 ================= */
+    #hud-bottom-bar {
+        bottom: 10px !important;
+        gap: 20px !important;
+    }
+
+    .hud-main-btn {
+        width: 50px !important;
+        height: 50px !important;
+    }
+
+    /* ================= 调试面板 ================= */
+    #debug-panel {
+        /* iPhone 灵动岛/刘海屏安全区域支持 */
+        top: max(20px, env(safe-area-inset-top, 20px)) !important;
+        right: 5px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        flex-direction: row !important;
+    }
+
+    .debug-btn {
+        padding: 4px 8px !important;
+        font-size: 10px !important;
+    }
+
+    /* [新增] 手机端只显示保存和读取按钮 */
+    /* 隐藏所有debug按钮 */
+    #debug-panel .debug-btn {
+        display: none !important;
+    }
+
+    /* 只显示保存按钮、读取按钮、说明按钮、画质按钮和版本号 */
+    #debug-panel #btn-save,
+    #debug-panel #btn-load,
+    #debug-panel #btn-manual,
+    #debug-panel #btn-graphics,
+    #debug-panel #game-version {
+        display: inline-block !important;
+    }
+
+    #game-version {
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-size: 14px !important;
+        font-weight: bold;
+        margin-left: 5px;
+        white-space: nowrap;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 画质设置面板手机端适配 */
+    #graphics-settings-panel {
+        top: max(60px, calc(env(safe-area-inset-top, 20px) + 40px)) !important;
+        right: 5px !important;
+        width: 190px !important;
+        padding: 12px 14px !important;
+    }
+
+    .gfx-label {
+        font-size: 12px !important;
+    }
+
+    .gfx-toggle {
+        width: 38px !important;
+        height: 24px !important;
+        font-size: 10px !important;
+    }
+
+    /* ================= Tooltip ================= */
+    #furniture-tooltip {
+        width: 90px !important;
+        height: 26px !important;
+        font-size: 10px !important;
+    }
+
+    /* ================= 时间滑块弹窗 ================= */
+    #time-popover {
+        left: 100% !important;
+        top: 6px !important;
+        margin-left: 14px !important;
+        margin-top: 0 !important;
+        width: 140px !important;
+        padding: 8px 12px !important;
+    }
+
+    #time-slider-hud {
+        width: 100px !important;
+    }
+
+    /* ================= 竖版日记本 (Vertical Diary) ================= */
+    #diary-book-container {
+        flex-direction: column !important;
+        width: 80vw !important;
+        /* 从90vw缩小到80vw，相当于缩小约89% */
+        height: 75vh !important;
+        /* 相应调整高度 */
+        max-width: 420px !important;
+        /* 调整最大宽度 */
+
+        /* 使用竖版背景图 */
+        /* 使用竖版背景图 - 使用shorthand写法增强兼容性 */
+        background: url('../assets/ui/diary_book_Vertical_bg.png') no-repeat center center / contain !important;
+        background-color: transparent !important;
+        /* 确保背景色透明，避免覆盖图片 */
+
+        box-shadow: none !important;
+        padding: 45px 25px 80px 25px !important;
+        /* 增加底部padding从60px到80px，为爪子图标留出空间 */
+        align-items: center !important;
+    }
+
+    /* 隐藏原本的横版背景图 */
+    #diary-bg-img {
+        display: none !important;
+    }
+
+    /* 关闭按钮 */
+    #diary-close-btn {
+        top: 40px !important;
+        /* 往下移动 */
+        right: 10px !important;
+        width: 40px !important;
+        height: 40px !important;
+        z-index: 1000 !important;
+        /* 确保在最上层可点击 */
+    }
+
+    /* 左页（头像页）变为上方区域 */
+    #diary-left-page {
+        width: 100% !important;
+        height: auto !important;
+        flex: 0 0 auto !important;
+        border-right: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: flex !important;
+        justify-content: center !important;
+        order: 1 !important;
+    }
+
+    /* 照片框 - 按照设计图调整 */
+    #polaroid-frame {
+        width: 250px !important;
+        /* 进一步缩小 */
+        height: 250px !important;
+        margin-top: 30px !important;
+        /* 增加顶部边距，避免超出背景 */
+        margin-left: 0 !important;
+        transform: rotate(0deg) scale(1) !important;
+        /* 不旋转，保持正直 */
+        filter: none !important;
+    }
+
+    .polaroid-photo {
+        top: 14px !important;
+        max-width: 88% !important;
+        max-height: 88% !important;
+    }
+
+    .polaroid-tape {
+        width: 50px !important;
+        height: 20px !important;
+    }
+
+    /* 照片框上的日期/天气文字 - 调整到底部中央 */
+    .polaroid-text {
+        font-size: 16px !important;
+        bottom: 15px !important;
+        font-weight: 500 !important;
+    }
+
+    #diary-photo-date {
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        text-align: center !important;
+    }
+
+    /* 隐藏照片框底部的天气文字（改用emoji图标显示在日期下方） */
+    #diary-photo-weather {
+        display: none !important;
+    }
+
+    /* 手动拍照按钮 */
+    #manual-photo-btn {
+        width: 80px !important;
+        height: 80px !important;
+        top: 0px !important;
+        left: -5px !important;
+    }
+
+    /* 右页（内容页）变为下方区域 */
+    #diary-right-page {
+        width: 100% !important;
+        flex: 1 !important;
+        padding: 20px 10px 40px 10px !important;
+        /* 增加底部padding从0到40px，确保内容不会到底部 */
+        order: 2 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+        align-items: flex-start !important;
+    }
+
+    /* 隐藏日期标题（已经显示在照片框底部） */
+    .page-date-title {
+        display: none !important;
+    }
+
+    /* 心情/天气 - 改为两行显示，居中对齐 */
+    .page-meta {
+        font-size: 0 !important;
+        /* 隐藏父元素的文本节点（分隔符）*/
+        margin-bottom: 12px !important;
+        text-align: center !important;
+        /* 居中对齐 */
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        /* 改为纵向排列（两行）*/
+        align-items: center !important;
+        /* 水平居中 */
+        gap: 3px !important;
+        /* 两行之间的间距 */
+        padding: 0 0px !important;
+        /* 左右内边距 */
+    }
+
+    #diary-weather {
+        font-size: 14px !important;
+        /* 缩小字体 */
+        white-space: nowrap !important;
+        display: block !important;
+        /* 确保独占一行 */
+    }
+
+    #diary-mood {
+        font-size: 14px !important;
+        /* 缩小字体 */
+        white-space: nowrap !important;
+        display: block !important;
+        /* 确保独占一行 */
+    }
+
+    /* 日记条目列表 */
+    #diary-entries-scroll {
+        padding: 0 20px 20px 20px !important;
+        /* 增加左右内边距，收窄文字显示范围 */
+        font-size: 13px !important;
+        /* 缩小字体 */
+        overflow-y: auto !important;
+        flex: 1 !important;
+        width: 100% !important;
+    }
+
+    .entry {
+        margin-bottom: 15px !important;
+        padding-left: 10px !important;
+        padding-right: 20px !important;
+        border-left: 3px solid rgba(139, 99, 76, 0.3) !important;
+        background-color: transparent !important;
+    }
+
+    .entry-text {
+        font-size: 13px !important;
+        /* 缩小字体 */
+        line-height: 1.6 !important;
+        color: #5d4037 !important;
+    }
+
+    .entry-time {
+        font-size: 11px !important;
+        /* 缩小字体 */
+        color: #8b634c !important;
+        margin-bottom: 4px !important;
+    }
+
+    /* 底部导航按钮 */
+    #diary-nav-buttons {
+        bottom: 20px !important;
+        gap: 160px !important;
+    }
+
+    #diary-nav-buttons button {
+        width: 80px !important;
+        height: 40px !important;
+    }
+
+    /* 装饰贴纸 - 隐藏或重新定位 */
+    .diary-deco-fish-left {
+        display: none !important;
+        /* 根据设计图，手机端可能不需要左侧鱼贴纸 */
+    }
+
+    .diary-deco-fish-right {
+        display: none !important;
+        /* 根据设计图，手机端可能不需要右侧鱼贴纸 */
+    }
+
+    .diary-deco-paw {
+        width: 30px !important;
+        height: 30px !important;
+        bottom: 0px !important;
+        /* 向上移动，增加距离底部的距离 */
+        right: 30px !important;
+    }
+
+
+}

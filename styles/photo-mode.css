@@ -1,0 +1,131 @@
+/* ===========================
+   拍照模式 - 拍立得相机界面
+   =========================== */
+
+#photo-mode-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none; /* 让鼠标事件穿透，可以调整视角 */
+}
+
+/* 添加左右黑色遮罩条 */
+#photo-mode-overlay::before,
+#photo-mode-overlay::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: calc((100vw - 100vh * 0.599) / 2); /* 计算两边的剩余空间 */
+    background: black;
+    z-index: -1; /* 确保在相机框架下面 */
+}
+
+#photo-mode-overlay::before {
+    left: 0;
+}
+
+#photo-mode-overlay::after {
+    right: 0;
+}
+
+/* 相机框架容器 - 顶天立地 */
+#camera-frame-container {
+    position: relative;
+    height: 100vh; /* 顶天立地 */
+    aspect-ratio: 0.599; /* Camera.png 宽高比 609/1016 ≈ 0.599 */
+    pointer-events: none;
+}
+
+/* 相机框架图片 */
+#camera-frame-img {
+    width: 100%;
+    height: 100%;
+    object-fit: fill; /* 填满容器 */
+    pointer-events: none;
+}
+
+/* 取景框区域（镂空部分，用于计算截图区域）
+   [2026-01-19修复v2] 调整取景框为4:5比例，与日记相框一致
+   相机框比例约0.599，取景框4:5=0.8
+   为适配4:5比例，调整宽度缩小，高度不变
+*/
+#viewfinder-area {
+    position: absolute;
+    /* 垂直方向：保持原有的49%高度 */
+    top: 15%;
+    height: 49%;
+    /* 水平方向：根据4:5计算宽度 
+       假设容器高度为100vh，取景框高度=49vh
+       4:5比例 => 宽度 = 49vh * 0.8 = 39.2vh
+       但需转为百分比：容器宽度 = 100vh * 0.599 = 59.9vh
+       所以 width% = 39.2 / 59.9 * 100% ≈ 65.4%
+       微调为65%并居中
+    */
+    width: 65%;
+    left: 17.5%; /* (100-65)/2 = 17.5% 居中 */
+    /* 调试用，正式时注释掉 */
+    /* border: 2px dashed red; */
+    pointer-events: none;
+}
+
+/* 快门按钮 - 对准相机上的圆圈 */
+#shutter-btn {
+    position: absolute;
+    /* 按钮圆心在相机图片底部约 8.5% 处，水平居中 */
+    bottom: 3.5%;
+    left: 50%;
+    transform: translateX(-50%);
+    /* 按钮大小约为相机宽度的 16% */
+    width: 16%;
+    aspect-ratio: 1;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    pointer-events: auto; /* 按钮可点击 */
+    transition: transform 0.1s;
+}
+
+#shutter-btn:hover {
+    transform: translateX(-50%) scale(1.05);
+}
+
+#shutter-btn:active {
+    transform: translateX(-50%) scale(0.95);
+}
+
+#camera-button-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* 退出按钮 */
+#exit-photo-mode-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all 0.2s;
+    z-index: 10000;
+}
+
+#exit-photo-mode-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+    transform: scale(1.1);
+}
