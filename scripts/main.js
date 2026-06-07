@@ -703,21 +703,19 @@ function loadAssets(callback) {
 
     // [优化] 手机端只预加载存档中已放置的家具模型，其他按需加载
     // 这样从 70+ 个 GLB 降到仅需的 5~15 个，节省 100-200MB 内存
-    let neededIds = null;
-    if (isMobile) {
-        try {
-            const json = localStorage.getItem('cat_game_save_v1');
-            if (json) {
-                const saveData = JSON.parse(json);
-                if (saveData.furniture && Array.isArray(saveData.furniture)) {
-                    neededIds = new Set(saveData.furniture.map(f => f.id));
-                    console.log(`[优化] 手机端按需加载，存档中有 ${neededIds.size} 种家具`);
-                }
+    let neededIds = new Set();
+    try {
+        const json = localStorage.getItem('cat_game_save_v1');
+        if (json) {
+            const saveData = JSON.parse(json);
+            if (saveData.furniture && Array.isArray(saveData.furniture)) {
+                neededIds = new Set(saveData.furniture.map(f => f.id));
+                console.log(`[Load] Preloading ${neededIds.size} saved furniture model types.`);
             }
-        } catch (e) {
-            console.warn('[优化] 读取存档失败，回退到全量加载', e);
-            neededIds = null; // 回退到全量加载
         }
+    } catch (e) {
+        console.warn('[Load] Failed to read saved furniture list; starting with core assets only.', e);
+        neededIds = new Set();
     }
 
     FURNITURE_DB.forEach(i => {
@@ -736,16 +734,32 @@ function loadAssets(callback) {
     files.forEach(f => {
         const isObj = f.path.toLowerCase().endsWith('.obj');
         const l = isObj ? objLoader : gltfLoader;
+        let settled = false;
+        const finish = () => {
+            if (settled) return;
+            settled = true;
+            count++;
+            check();
+        };
+        const timeoutId = setTimeout(() => {
+            console.warn("Asset load timeout:", f.path);
+            logToScreen(`Timed out: ${f.path}`, 'warn');
+            finish();
+        }, 25000);
         l.load(f.path, (data) => {
+            if (settled) return;
+            clearTimeout(timeoutId);
             const sceneData = isObj ? data : data.scene;
             const anims = isObj ? [] : data.animations;
             sceneData.traverse(sanitizeMaterial);
             loadedModels[f.key] = { scene: sceneData, animations: anims };
-            count++; check();
+            finish();
         }, undefined, (err) => {
+            if (settled) return;
+            clearTimeout(timeoutId);
             console.warn("Missing asset:", f.path);
             logToScreen(`Failed to load: ${f.path}`, 'warn');
-            count++; check();
+            finish();
         });
     });
     function check() {
@@ -1242,8 +1256,7 @@ function updateEnvironment(dt) {
         else if (displayH >= 17 && displayH < 20) phase = 'dusk';
 
         const targetIcon = phase === 'night' ? './assets/ui/icon_moon.png' : './assets/ui/icon_sun.png';
-        const targetHref = new URL(targetIcon, window.location.href).href;
-        if (weatherIcon.src !== targetHref) weatherIcon.src = targetIcon;
+        if (!weatherIcon.src.includes(targetIcon)) weatherIcon.src = targetIcon;
         weatherIcon.classList.remove('phase-morning', 'phase-afternoon', 'phase-dusk', 'phase-night');
         weatherIcon.classList.add(`phase-${phase}`);
     }
@@ -4224,7 +4237,7 @@ window.showManual = function () {
         modal.innerHTML = `
             <div id="manual-content">
                 <button id="manual-close" onclick="document.getElementById('manual-modal').classList.remove('show')">&times;</button>
-                <h2>📖 喵屋 - 玩家操作指南</h2>
+                <h2>📖 方寸喵居 - 玩家操作指南</h2>
                 <h3>💻 电脑端 (PC)</h3>
                 <p><b>视角控制：</b><br>
                 旋转：按住鼠标左键拖动<br>
